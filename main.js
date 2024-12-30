@@ -15,6 +15,12 @@ function update() {
     let averageoreDisplayText = `${formatNumber(averageorePerSec)} Ore per second`;
     averageoreDisplay.textContent = averageoreDisplayText;
 
+    const conquestDisplay = document.getElementById("conquest-display");
+    let conquestProgress = ore/100;
+    conquestDisplay.value = conquestProgress;
+    const conquestDisplayText = document.getElementById("conquest-display-text");
+    conquestDisplayText.textContent = `${Math.min(conquestProgress, 100)}%`;
+
     requestAnimationFrame(update);
 }
 

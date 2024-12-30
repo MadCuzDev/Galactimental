@@ -26,7 +26,7 @@
     <div class="tabs">
         <button class="tab-button" id="defaultTab" onclick="changeTab(event, 'main')">Main</button>
         <button class="tab-button" onclick="changeTab(event, 'tab2')">tab2 test</button>
-        <button class="tab-button" onclick="changeTab(event, 'tab3')">tab3 test</button>
+        <button class="tab-button" onclick="changeTab(event, 'settings')">Settings</button>
     </div>
     <br>
     <!--Main Layout-->
@@ -38,7 +38,7 @@
     </div>
 
     <!--tab2 example Layout-->
-    <div class="tab" id="tab2">
+    <div class="tab tabStyle" id="tab2">
         <h3>tab2</h3>
         <div class="tabStyle">
             <p>test</p>
@@ -51,18 +51,16 @@
         </div>
     </div>
 
-    <!--tab3 example Layout-->
-    <div class="tab" id="tab3">
-        <h3>tab3</h3>
-        <div class="tabStyle">
-            <p>test</p>
-        </div>
-
-        <div class="tabStyle">
-            <div class="tabStats">
-                <p>test</p>
-            </div>
-        </div>
+    <!--Settings Layout-->
+    <div class="tab tabStyle" id="settings">
+        <h3>Settings</h3>
+        <hr>
+        <button id="resetButton" onclick="resetAll()">reset game</button>
+    </div>
+    <p>Conquest Progress</p>
+    <div class="progress-bar">
+        <span id="conquest-display-text">test</span>
+        <progress id="conquest-display" value="0" max="100">placeholder</progress>
     </div>
 </div>
 
