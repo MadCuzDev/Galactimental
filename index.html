@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Galactimental</title>
+    <link href="main.css" rel="stylesheet" type="text/css">
+    <script src="main.js"></script>
+</head>
+
+<body>
+<div class="side-column">
+    <div class="stats">
+        <h3>Stats</h3>
+        <p id="ore-display"></p>
+        <p id="average-ore-display"></p>
+    </div>
+</div>
+
+<div class="center-column">
+    <h1>Galactimental</h1>
+    <!--Navigation "Tabs"-->
+    <div class="tabs">
+        <button class="tab-button" id="defaultTab" onclick="changeTab(event, 'main')">Main</button>
+        <button class="tab-button" onclick="changeTab(event, 'tab2')">tab2 test</button>
+        <button class="tab-button" onclick="changeTab(event, 'tab3')">tab3 test</button>
+    </div>
+    <br>
+    <!--Main Layout-->
+    <div class="tab tabStyle" id="main">
+        <h3>Main</h3>
+        <div class="tabStyle">
+            <p>test</p>
+        </div>
+    </div>
+
+    <!--tab2 example Layout-->
+    <div class="tab" id="tab2">
+        <h3>tab2</h3>
+        <div class="tabStyle">
+            <p>test</p>
+        </div>
+
+        <div class="tabStyle">
+            <div class="tabStats">
+                <p>test</p>
+            </div>
+        </div>
+    </div>
+
+    <!--tab3 example Layout-->
+    <div class="tab" id="tab3">
+        <h3>tab3</h3>
+        <div class="tabStyle">
+            <p>test</p>
+        </div>
+
+        <div class="tabStyle">
+            <div class="tabStats">
+                <p>test</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="side-column">
+    <div class="stats">
+        <h3>right display</h3>
+        <br>
+        <p>test</p>
+    </div>
+</div>
+</body>

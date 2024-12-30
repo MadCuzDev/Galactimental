@@ -1,0 +1,62 @@
+/* Colors
+Background: #131419
+Background-foreground: #20212F
+Main Highlight: #4357AF
+Font: #E6E7DC
+ */
+
+body {
+    background-color: #131419;
+    color: #E6E7DC;
+    text-align: center;
+    font-size: 16px;
+}
+
+button {
+    background-color: #20212F;
+    color: #E6E7DC;
+    white-space: pre;
+    min-width: 6%;
+    min-height: 2vh;
+    border: solid 1px #20212F;
+}
+
+.active {
+    background-color: #4357AF;
+}
+
+.tab {
+    display: none;
+    height: 80vh;
+}
+
+.tabStyle {
+    border: 1px solid #4357AF;
+    background-color: #20212F;
+    padding: .2%;
+    min-height: 15vh;
+    margin: 0 auto 1%;
+    align-content: center;
+    text-align: center;
+}
+
+.center-column {
+    float: left;
+    width: 60%;
+    height: 99vh;
+}
+
+.side-column {
+    float: left;
+    width: 20%;
+}
+
+.stats {
+    text-align: left;
+    width: 50%;
+    border: 1px solid #4357AF;
+    background-color: #20212F;
+    margin: 2% auto auto;
+    padding: 0 2% 0;
+    min-height: 80vh;
+}
