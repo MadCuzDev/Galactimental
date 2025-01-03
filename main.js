@@ -111,11 +111,9 @@ function satelliteCooldown() {
 }
 
 function resetAll() {
-    gameData["ore"] = 0;
-    gameData["mines"] = 0;
-    gameData["satellites"] = 0;
-    gameData["research"] = 0;
+    doNotSave = true;
     localStorage.clear();
+    location.reload();
 }
 
 function backgroundLoop() {
