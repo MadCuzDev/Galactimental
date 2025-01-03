@@ -27,14 +27,14 @@
         <button class="tab-button" onclick="changeTab(event, 'settings')">Settings</button>
     </div>
     <br>
-    <!--Main Layout-->
-    <div class="tab tabStyle" id="main">
+    <!--Main Tab-->
+    <div class="tab tab-style" id="main">
         <h3>Main</h3>
-        <div class="tabStyle">
+        <div class="tab-style">
             <p>Upgrades</p>
             <button class="shopButton" id="mine-button" onclick="purchaseUpgrade('mine')">build mine<br>1 ore per second<br>Cooldown: 0s</button>
         </div>
-        <div class="tabStyle">
+        <div class="tab-style">
             <p>Space</p>
             <button class="shopButton" id="satellite-button" onclick="purchaseUpgrade('satellite')">build satellite - cost: 30 ore<br>collects research around planet<br>Cooldown: 0s</button>
             <br><br>
@@ -43,8 +43,8 @@
         </div>
     </div>
 
-    <!--Settings Layout-->
-    <div class="tab tabStyle" id="settings">
+    <!--Settings Tab-->
+    <div class="tab tab-style" id="settings">
         <h3>Settings</h3>
         <hr>
         <button id="resetButton" onclick="resetAll()">reset game</button>

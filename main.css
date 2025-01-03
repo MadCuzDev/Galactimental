@@ -19,7 +19,6 @@ p {
 button {
     background-color: #20212F;
     color: #E6E7DC;
-    white-space: pre;
     min-width: 6%;
     min-height: 2vh;
     border: solid 1px #131419;
@@ -29,12 +28,16 @@ button {
     background-color: #4357AF;
 }
 
+.shopButton:active {
+    background-color: #4357AF;
+}
+
 .tab {
     display: none;
     height: 75vh;
 }
 
-.tabStyle {
+.tab-style {
     border: 1px solid #4357AF;
     background-color: #20212F;
     padding: .2%;
@@ -62,6 +65,11 @@ button {
     margin: 2% auto auto;
     padding: 0 2% 0;
     min-height: 80vh;
+    word-wrap: break-word;
+}
+
+.stats p {
+    white-space: pre-wrap;
 }
 
 hr {
@@ -98,4 +106,5 @@ hr {
     margin-right: 0;
     margin-left: 0;
     border-color: #4357AF;
+    white-space: pre;
 }

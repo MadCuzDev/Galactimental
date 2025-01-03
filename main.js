@@ -25,7 +25,8 @@ function update() {
     let statDisplayText = `${formatNumber(gameData["ore"])} Ore\r\n`;
     statDisplayText += `${formatNumber(displayOrePerSec)} Ore per second\r\n\r\n`;
     statDisplayText += `${formatNumber(gameData["mines"])} Mines\r\n\r\n`;
-    statDisplayText += `${formatNumber(gameData["satellites"])} Satellites`;
+    statDisplayText += `${formatNumber(gameData["satellites"])} Satellites\r\n\r\n`;
+    statDisplayText += `${formatNumber(gameData["research"])} Research`;
     statDisplay.textContent = statDisplayText;
 
     const conquestDisplay = document.getElementById("conquest-display");
@@ -36,6 +37,7 @@ function update() {
 
     if (!hasHadPopup && conquestDisplay.value >= 100) {
         hasHadPopup = true;
+        // hopefully add better ending because this isn't great
         alert("It wasn’t until we captured one of them alive that we realized the truth. Underneath the armor and the strange language, they spoke our words, our history—humans, displaced, survivors of something we couldn't even imagine. The technology, the ships, the weapons—those were all just tools for survival, nothing more.");
         alert("I’ve been fighting them for so long, convinced they were aliens, but the truth is they were just people—people like us. Their strange appearance, their unfamiliar ways, they were just different, not dangerous. All this time, I was the real threat, and now it’s too late to take it back.");
     }
@@ -70,8 +72,9 @@ function purchaseUpgrade(upgradeName) {
             }
             break;
         case "satellite":
-            if (satelliteIncreaseCooldown === 0) {
+            if (satelliteIncreaseCooldown === 0 && gameData["ore"] >= 30) {
                 gameData["satellites"]++;
+                gameData["ore"]-=30;
                 satelliteInterval = setInterval(satelliteCooldown, 1000);
                 satelliteIncreaseCooldown = 2;
                 document.getElementById("satellite-button").textContent = `build satellite - cost: 30 ore\r\ncollects research around planet\r\nCooldown: ${satelliteIncreaseCooldown}s`;
@@ -84,9 +87,10 @@ function launchShip(shipName) {
     switch (shipName) {
         case "satellite":
             if (gameData["satellites"] > 0) {
+                const tempSatellite = gameData["satellites"];
                 setTimeout(function () {
-                    gameData["research"]+=gameData["satellites"];
-                    document.getElementById("mission-log").textContent += `Satellites returned with ${gameData["satellites"]} research`;
+                    gameData["research"]+=tempSatellite;
+                    document.getElementById("mission-log").textContent += `Satellites returned with ${tempSatellite} research\r\n`;
                 }, 20000);
                 gameData["satellites"] = 0;
             }
@@ -147,7 +151,7 @@ function calcPerTick() {
 
 function load() {
     Object.keys(gameData).forEach(key => {
-        gameData[key] = +localStorage.getItem(key) || 0; // Default to 0 if no data exists
+        gameData[key] = +localStorage.getItem(key);
     });
     calculateOfflineGain();
 }
