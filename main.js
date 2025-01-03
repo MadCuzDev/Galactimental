@@ -1,25 +1,45 @@
-var ore = 0;
-var tickInterval = 100;
-var currentTick = 0;
+const gameData = {
+    ore: 0,
+    mines: 0,
+    satellites: 0,
+    research: 0
+};
 
-var averageorePerSec = 0;
+const tickInterval = 100;
+let currentTick = 0;
 
-var doNotSave = false;
+let mineIncreaseCooldown = 0;
+let mineInterval = null;
+
+let satelliteIncreaseCooldown = 0;
+let satelliteInterval = null;
+
+let averageOrePerSec = 0;
+let displayOrePerSec = 0;
+
+let doNotSave = false;
+let hasHadPopup = false;
 
 function update() {
-    const oreDisplay = document.getElementById("ore-display");
-    let oreDisplayText = `${formatNumber(ore)} Ore`;
-    oreDisplay.textContent = oreDisplayText;
-
-    const averageoreDisplay = document.getElementById("average-ore-display");
-    let averageoreDisplayText = `${formatNumber(averageorePerSec)} Ore per second`;
-    averageoreDisplay.textContent = averageoreDisplayText;
+    const statDisplay = document.getElementById("stat-display");
+    let statDisplayText = `${formatNumber(gameData["ore"])} Ore\r\n`;
+    statDisplayText += `${formatNumber(displayOrePerSec)} Ore per second\r\n\r\n`;
+    statDisplayText += `${formatNumber(gameData["mines"])} Mines\r\n\r\n`;
+    statDisplayText += `${formatNumber(gameData["satellites"])} Satellites`;
+    statDisplay.textContent = statDisplayText;
 
     const conquestDisplay = document.getElementById("conquest-display");
-    let conquestProgress = ore/100;
+    let conquestProgress = gameData["ore"]/100;
     conquestDisplay.value = conquestProgress;
     const conquestDisplayText = document.getElementById("conquest-display-text");
     conquestDisplayText.textContent = `${Math.min(conquestProgress, 100)}%`;
+
+    if (!hasHadPopup && conquestDisplay.value >= 100) {
+        hasHadPopup = true;
+        alert("It wasn’t until we captured one of them alive that we realized the truth. Underneath the armor and the strange language, they spoke our words, our history—humans, displaced, survivors of something we couldn't even imagine. The technology, the ships, the weapons—those were all just tools for survival, nothing more.");
+        alert("I’ve been fighting them for so long, convinced they were aliens, but the truth is they were just people—people like us. Their strange appearance, their unfamiliar ways, they were just different, not dangerous. All this time, I was the real threat, and now it’s too late to take it back.");
+    }
+
 
     requestAnimationFrame(update);
 }
@@ -39,8 +59,58 @@ function changeTab(event, tabName) {
     event.currentTarget.className += " active";
 }
 
+function purchaseUpgrade(upgradeName) {
+    switch (upgradeName) {
+        case "mine":
+            if (mineIncreaseCooldown === 0) {
+                gameData["mines"]++;
+                mineInterval = setInterval(mineCooldown, 1000);
+                mineIncreaseCooldown = 3;
+                document.getElementById("mine-button").textContent = `build mine\r\n1 ore per second\r\nCooldown: ${mineIncreaseCooldown}s`;
+            }
+            break;
+        case "satellite":
+            if (satelliteIncreaseCooldown === 0) {
+                gameData["satellites"]++;
+                satelliteInterval = setInterval(satelliteCooldown, 1000);
+                satelliteIncreaseCooldown = 2;
+                document.getElementById("satellite-button").textContent = `build satellite - cost: 30 ore\r\ncollects research around planet\r\nCooldown: ${satelliteIncreaseCooldown}s`;
+            }
+            break;
+    }
+}
+
+function launchShip(shipName) {
+    switch (shipName) {
+        case "satellite":
+            if (gameData["satellites"] > 0) {
+                setTimeout(function () {
+                    gameData["research"]+=gameData["satellites"];
+                    document.getElementById("mission-log").textContent += `Satellites returned with ${gameData["satellites"]} research`;
+                }, 20000);
+                gameData["satellites"] = 0;
+            }
+            break;
+    }
+}
+
+function mineCooldown() {
+    mineIncreaseCooldown--;
+    document.getElementById("mine-button").textContent = `build mine\r\n1 ore per second\r\nCooldown: ${mineIncreaseCooldown}s`;
+    if (mineIncreaseCooldown === 0) clearInterval(mineInterval);
+}
+
+function satelliteCooldown() {
+    satelliteIncreaseCooldown--;
+    document.getElementById("satellite-button").textContent = `build satellite - cost: 30 ore\r\ncollects research around planet\r\nCooldown: ${satelliteIncreaseCooldown}s`;
+    if (satelliteIncreaseCooldown === 0) clearInterval(satelliteInterval);
+}
+
 function resetAll() {
-    ore = 0;
+    gameData["ore"] = 0;
+    gameData["mines"] = 0;
+    gameData["satellites"] = 0;
+    gameData["research"] = 0;
     localStorage.clear();
 }
 
@@ -54,50 +124,40 @@ function formatNumber(number, decimal = 2) {
     if (number.toFixed(0).toString().length > 9) {
         return number.toExponential(decimal);
     } else {
-        return new Intl.NumberFormat().format(number.toFixed(decimal));
+        return new Intl.NumberFormat().format(number.toFixed(0));
     }
 }
 
 function calcPerTick() {
-    const currentore = ore;
+    const currentOre = gameData["ore"];
 
-    ore+=1;
+    gameData["ore"]+=0.1*gameData["mines"];
 
-    averageorePerSec = ore - currentore;
+    averageOrePerSec += gameData["ore"] - currentOre;
 
     currentTick++;
 
     if (currentTick === 10) {
         currentTick = 0;
-        displayorePerSec = averageorePerSec;
+        displayOrePerSec = averageOrePerSec;
+
+        averageOrePerSec = 0;
     }
 }
 
-
-const items = ['ore'];
-
 function load() {
-    items.forEach(item => {
-        const value = localStorage.getItem(item);
-        if (value !== null) {
-            window[item] = isNaN(value) ? JSON.parse(value) : Number(value);
-        }
+    Object.keys(gameData).forEach(key => {
+        gameData[key] = +localStorage.getItem(key) || 0; // Default to 0 if no data exists
     });
-
     calculateOfflineGain();
 }
-
-const intData = ['ore'];
-const floatData = [];
-const genericData = [];
 
 function save() {
     if (doNotSave) return;
 
-    [...intData, ...floatData, ...genericData].forEach(key => {
-        localStorage.setItem(key, window[key]);
+    Object.keys(gameData).forEach(key => {
+        localStorage.setItem(key, gameData[key]);
     });
-
     localStorage.setItem('last_save', Date.now());
 }
 
@@ -105,12 +165,12 @@ function calculateOfflineGain() {
     if (localStorage.getItem('last_save')) {
         let last_save = localStorage.getItem('last_save');
         let time_elapsed = Date.now() - last_save;
-        let currentOre = ore;
+        let currentOre = gameData["ore"];
         for (let i = time_elapsed; i > 0; i -= 100) {
             calcPerTick();
         }
 
-        let gain = ore - currentOre;
+        let gain = gameData["ore"] - currentOre;
         alert("You have made " + gain.toFixed(2) + " ore offline");
 
 

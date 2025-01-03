@@ -15,8 +15,7 @@
 <div class="side-column">
     <div class="stats">
         <h3>Stats</h3>
-        <p id="ore-display"></p>
-        <p id="average-ore-display"></p>
+        <p id="stat-display"></p>
     </div>
 </div>
 
@@ -25,7 +24,6 @@
     <!--Navigation "Tabs"-->
     <div class="tabs">
         <button class="tab-button" id="defaultTab" onclick="changeTab(event, 'main')">Main</button>
-        <button class="tab-button" onclick="changeTab(event, 'tab2')">tab2 test</button>
         <button class="tab-button" onclick="changeTab(event, 'settings')">Settings</button>
     </div>
     <br>
@@ -33,21 +31,15 @@
     <div class="tab tabStyle" id="main">
         <h3>Main</h3>
         <div class="tabStyle">
-            <p>test</p>
+            <p>Upgrades</p>
+            <button class="shopButton" id="mine-button" onclick="purchaseUpgrade('mine')">build mine<br>1 ore per second<br>Cooldown: 0s</button>
         </div>
-    </div>
-
-    <!--tab2 example Layout-->
-    <div class="tab tabStyle" id="tab2">
-        <h3>tab2</h3>
         <div class="tabStyle">
-            <p>test</p>
-        </div>
-
-        <div class="tabStyle">
-            <div class="tabStats">
-                <p>test</p>
-            </div>
+            <p>Space</p>
+            <button class="shopButton" id="satellite-button" onclick="purchaseUpgrade('satellite')">build satellite - cost: 30 ore<br>collects research around planet<br>Cooldown: 0s</button>
+            <br><br>
+            <button class="shopButton" id="launch-satellite-button" onclick="launchShip('satellite')">launch satellites<br>collects research around planet</button>
+            <br><br>
         </div>
     </div>
 
@@ -66,9 +58,8 @@
 
 <div class="side-column">
     <div class="stats">
-        <h3>right display</h3>
-        <br>
-        <p>test</p>
+        <h3>Mission log</h3>
+        <p id="mission-log"></p>
     </div>
 </div>
 </body>

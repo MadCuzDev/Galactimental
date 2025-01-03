@@ -12,6 +12,10 @@ body {
     font-size: 16px;
 }
 
+p {
+    white-space: pre;
+}
+
 button {
     background-color: #20212F;
     color: #E6E7DC;
@@ -85,4 +89,13 @@ hr {
     align-items: center;
     justify-content: center;
     display: inline-flex;
+}
+
+.shopButton {
+    min-width: 32.8%;
+    min-height: 5vh;
+    margin-bottom: 4px;
+    margin-right: 0;
+    margin-left: 0;
+    border-color: #4357AF;
 }
