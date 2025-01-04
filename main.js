@@ -1,33 +1,4 @@
-import { gameData } from "./data.js";
-
-const cooldowns = {
-    mine: 0,
-    satellite: 0,
-    probe: 0,
-    colony: 0
-};
-
-const intervals = {
-    mine: null,
-    satellite: null,
-    probe: null,
-    colony: null
-};
-
-const upgrades = {
-    // Cost, Delay
-    mine: [0, 3],
-    satellite: [30, 2],
-    probe: [500, 20],
-    colony: [5000, 30],
-};
-
-const ships = {
-    // Research value, land value
-    satellite: [1, 0],
-    probe: [10, 0],
-    colony: [10, 1],
-}
+import { gameData, cooldowns, intervals, upgrades, ships, loadData, resetAll } from "./data.js";
 
 const tickInterval = 100;
 let currentTick = 0;
@@ -35,7 +6,6 @@ let currentTick = 0;
 let averageOrePerSec = 0;
 let displayOrePerSec = 0;
 
-let doNotSave = false;
 let hasHadPopup = false;
 
 let statDisplay = null;
@@ -135,11 +105,6 @@ function cooldownInterval(name) {
     if (cooldowns[name] === 0) clearInterval(intervals[name]);
 }
 
-function resetAll() {
-    doNotSave = true;
-    localStorage.clear();
-    location.reload();
-}
 
 function backgroundLoop() {
     setInterval(function () {
@@ -174,10 +139,14 @@ function calcPerTick() {
 }
 
 function load() {
-    //idk
+    // Load data from local storage
+    loadData();
+
+    //Make functions available to html
     window.changeTab = changeTab;
     window.purchaseUpgrade = purchaseUpgrade;
     window.launchShip = launchShip;
+    window.resetAll = resetAll;
 
     // Load displays
     statDisplay = document.getElementById("stat-display");
@@ -185,20 +154,8 @@ function load() {
     conquestDisplayText = document.getElementById("conquest-display-text");
     missionLog = document.getElementById("mission-log");
 
-    // Load data from local storage
-    Object.keys(gameData).forEach(key => {
-        gameData[key] = +localStorage.getItem(key);
-    });
+    // Offline progress
     calculateOfflineGain();
-}
-
-function save() {
-    if (doNotSave) return;
-
-    Object.keys(gameData).forEach(key => {
-        localStorage.setItem(key, gameData[key]);
-    });
-    localStorage.setItem('last_save', Date.now());
 }
 
 function calculateOfflineGain() {
@@ -212,11 +169,6 @@ function calculateOfflineGain() {
         let gain = gameData["ore"] - currentOre;
         alert("You have made " + gain.toFixed(2) + " ore offline");
     }
-}
-
-// Save/Load system for ore
-window.onbeforeunload = function (event) {
-    save();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
