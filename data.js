@@ -1,4 +1,4 @@
-export const gameData = {
+const gameData = {
     ore: 0,
     mine: 0,
     land: 0,
@@ -7,3 +7,5 @@ export const gameData = {
     probe: 0,
     colony: 0
 };
+
+export { gameData };
