@@ -88,7 +88,7 @@ hr {
 .progress-bar progress {
     width: 80%;
     height: 5vh;
-    accent-color: #20212F;
+    background-color: #20212F;
     border: #4357AF;
 }
 
