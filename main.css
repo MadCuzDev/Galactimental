@@ -2,6 +2,7 @@
 Background: #131419
 Background-foreground: #20212F
 Main Highlight: #4357AF
+Dim Highlight: #27283A
 Font: #E6E7DC
  */
 
@@ -107,4 +108,5 @@ hr {
     margin-left: 0;
     border-color: #4357AF;
     white-space: pre;
+    background: #27283A;
 }

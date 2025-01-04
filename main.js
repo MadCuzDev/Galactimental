@@ -1,18 +1,44 @@
 const gameData = {
     ore: 0,
-    mines: 0,
-    satellites: 0,
-    research: 0
+    mine: 0,
+    land: 0,
+    satellite: 0,
+    research: 0,
+    probe: 0,
+    colony: 0
 };
+
+const cooldowns = {
+    mine: 0,
+    satellite: 0,
+    probe: 0,
+    colony: 0
+};
+
+const intervals = {
+    mine: null,
+    satellite: null,
+    probe: null,
+    colony: null
+};
+
+const upgrades = {
+    // Cost, Delay
+    mine: [0, 3],
+    satellite: [30, 2],
+    probe: [500, 20],
+    colony: [5000, 30],
+};
+
+const ships = {
+    // Research value, land value
+    satellite: [1, 0],
+    probe: [10, 0],
+    colony: [10, 1],
+}
 
 const tickInterval = 100;
 let currentTick = 0;
-
-let mineIncreaseCooldown = 0;
-let mineInterval = null;
-
-let satelliteIncreaseCooldown = 0;
-let satelliteInterval = null;
 
 let averageOrePerSec = 0;
 let displayOrePerSec = 0;
@@ -20,19 +46,24 @@ let displayOrePerSec = 0;
 let doNotSave = false;
 let hasHadPopup = false;
 
+let statDisplay = null;
+let conquestDisplay = null;
+let conquestDisplayText = null;
+let missionLog = null;
+
 function update() {
-    const statDisplay = document.getElementById("stat-display");
     let statDisplayText = `${formatNumber(gameData["ore"])} Ore\r\n`;
     statDisplayText += `${formatNumber(displayOrePerSec)} Ore per second\r\n\r\n`;
-    statDisplayText += `${formatNumber(gameData["mines"])} Mines\r\n\r\n`;
-    statDisplayText += `${formatNumber(gameData["satellites"])} Satellites\r\n\r\n`;
+    statDisplayText += `${formatNumber(gameData["mine"])} Mines\r\n\r\n`;
+    statDisplayText += `${formatNumber(gameData["land"])} Land\r\n\r\n`;
+    statDisplayText += `${formatNumber(gameData["satellite"])} Satellites\r\n`;
+    statDisplayText += `${formatNumber(gameData["probe"])} Probes\r\n`;
+    statDisplayText += `${formatNumber(gameData["colony"])} Colony Ships\r\n\r\n`;
     statDisplayText += `${formatNumber(gameData["research"])} Research`;
     statDisplay.textContent = statDisplayText;
 
-    const conquestDisplay = document.getElementById("conquest-display");
-    let conquestProgress = gameData["ore"]/100;
+    let conquestProgress = gameData["land"] / 10;
     conquestDisplay.value = conquestProgress;
-    const conquestDisplayText = document.getElementById("conquest-display-text");
     conquestDisplayText.textContent = `${Math.min(conquestProgress, 100)}%`;
 
     if (!hasHadPopup && conquestDisplay.value >= 100) {
@@ -62,52 +93,54 @@ function changeTab(event, tabName) {
 }
 
 function purchaseUpgrade(upgradeName) {
-    switch (upgradeName) {
-        case "mine":
-            if (mineIncreaseCooldown === 0) {
-                gameData["mines"]++;
-                mineInterval = setInterval(mineCooldown, 1000);
-                mineIncreaseCooldown = 3;
-                document.getElementById("mine-button").textContent = `build mine\r\n1 ore per second\r\nCooldown: ${mineIncreaseCooldown}s`;
-            }
-            break;
-        case "satellite":
-            if (satelliteIncreaseCooldown === 0 && gameData["ore"] >= 30) {
-                gameData["satellites"]++;
-                gameData["ore"]-=30;
-                satelliteInterval = setInterval(satelliteCooldown, 1000);
-                satelliteIncreaseCooldown = 2;
-                document.getElementById("satellite-button").textContent = `build satellite - cost: 30 ore\r\ncollects research around planet\r\nCooldown: ${satelliteIncreaseCooldown}s`;
-            }
-            break;
+    if (cooldowns[upgradeName] === 0 && gameData["ore"] >= upgrades[upgradeName][0]) {
+        gameData[upgradeName]++;
+        gameData["ore"] -= upgrades[upgradeName][0];
+        intervals[upgradeName] = setInterval(function () {
+            cooldownInterval(upgradeName)
+        }, 1000);
+        cooldowns[upgradeName] = upgrades[upgradeName][1];
+        formatButton(upgradeName);
     }
 }
 
 function launchShip(shipName) {
-    switch (shipName) {
-        case "satellite":
-            if (gameData["satellites"] > 0) {
-                const tempSatellite = gameData["satellites"];
-                setTimeout(function () {
-                    gameData["research"]+=tempSatellite;
-                    document.getElementById("mission-log").textContent += `Satellites returned with ${tempSatellite} research\r\n`;
-                }, 20000);
-                gameData["satellites"] = 0;
-            }
-            break;
+    if (gameData[shipName] > 0) {
+        const tempCount = gameData[shipName];
+        const researchCount = gameData[shipName] * ships[shipName][0];
+        const landCount = gameData[shipName] * ships[shipName][1];
+        setTimeout(function () {
+            gameData["research"] += researchCount;
+            gameData["land"] += landCount;
+            missionLog.textContent += `${tempCount} ${shipName === "colony" ? "colony ship" : shipName}s returned with ${researchCount} research`;
+            if (landCount > 0) missionLog.textContent += ` and ${landCount} land\r\n`;
+            else missionLog.textContent += `\r\n`;
+        }, 20000);
+        gameData[shipName] = 0;
     }
 }
 
-function mineCooldown() {
-    mineIncreaseCooldown--;
-    document.getElementById("mine-button").textContent = `build mine\r\n1 ore per second\r\nCooldown: ${mineIncreaseCooldown}s`;
-    if (mineIncreaseCooldown === 0) clearInterval(mineInterval);
+function formatButton(name) {
+    switch (name) {
+        case "mine":
+            document.getElementById("mine-button").textContent = `build mine\r\n1 ore per second\r\nCooldown: ${cooldowns[name]}s`;
+            break;
+        case "satellite":
+            document.getElementById("satellite-button").textContent = `build satellite - cost: ${upgrades[name][0]} ore\r\ncollects research around planet\r\nCooldown: ${cooldowns[name]}s`;
+            break;
+        case "probe":
+            document.getElementById("probe-button").textContent = `build probe - cost: ${upgrades[name][0]} ore\r\ncollects more research in nearby outer space\r\nCooldown: ${cooldowns[name]}s`;
+            break
+        case "colony":
+            document.getElementById("colony-button").textContent = `build colony ship - cost: ${upgrades[name][0]} ore\r\ncolonizes land and much more research in nearby outer space\r\nCooldown: ${cooldowns[name]}s`;
+            break
+    }
 }
 
-function satelliteCooldown() {
-    satelliteIncreaseCooldown--;
-    document.getElementById("satellite-button").textContent = `build satellite - cost: 30 ore\r\ncollects research around planet\r\nCooldown: ${satelliteIncreaseCooldown}s`;
-    if (satelliteIncreaseCooldown === 0) clearInterval(satelliteInterval);
+function cooldownInterval(name) {
+    cooldowns[name]--;
+    formatButton(name);
+    if (cooldowns[name] === 0) clearInterval(intervals[name]);
 }
 
 function resetAll() {
@@ -133,11 +166,12 @@ function formatNumber(number, decimal = 2) {
 function calcPerTick() {
     const currentOre = gameData["ore"];
 
-    gameData["ore"]+=0.1*gameData["mines"];
-
-    averageOrePerSec += gameData["ore"] - currentOre;
+    gameData["ore"] += 0.1 * gameData["mine"];
 
     currentTick++;
+
+    // Calculate average ore gains
+    averageOrePerSec += gameData["ore"] - currentOre;
 
     if (currentTick === 10) {
         currentTick = 0;
@@ -148,6 +182,13 @@ function calcPerTick() {
 }
 
 function load() {
+    // Load displays
+    statDisplay = document.getElementById("stat-display");
+    conquestDisplay = document.getElementById("conquest-display");
+    conquestDisplayText = document.getElementById("conquest-display-text");
+    missionLog = document.getElementById("mission-log");
+
+    // Load data from local storage
     Object.keys(gameData).forEach(key => {
         gameData[key] = +localStorage.getItem(key);
     });
@@ -165,8 +206,7 @@ function save() {
 
 function calculateOfflineGain() {
     if (localStorage.getItem('last_save')) {
-        let last_save = localStorage.getItem('last_save');
-        let time_elapsed = Date.now() - last_save;
+        const time_elapsed = Date.now() - localStorage.getItem('last_save');
         let currentOre = gameData["ore"];
         for (let i = time_elapsed; i > 0; i -= 100) {
             calcPerTick();
@@ -174,8 +214,6 @@ function calculateOfflineGain() {
 
         let gain = gameData["ore"] - currentOre;
         alert("You have made " + gain.toFixed(2) + " ore offline");
-
-
     }
 }
 
