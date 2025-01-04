@@ -88,9 +88,12 @@ hr {
 .progress-bar progress {
     width: 80%;
     height: 5vh;
-    background-color: #20212F;
+    accent-color: #20212F;
     border: #4357AF;
 }
+
+.progress-bar progress::-webkit-progress-bar {background-color: #20212F;}
+
 .progress-bar span {
     position: absolute;
     width: 80%;
