@@ -65,8 +65,9 @@ button {
     background-color: #20212F;
     margin: 2% auto auto;
     padding: 0 2% 0;
-    min-height: 80vh;
+    height: 80vh;
     word-wrap: break-word;
+    overflow: hidden;
 }
 
 .stats p {
@@ -112,4 +113,29 @@ hr {
     border-color: #4357AF;
     white-space: pre;
     background: #27283A;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.arrow-button {
+    background-color: #4357AF; /* Green background */
+    border: none;
+    padding: 30px 3px;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 50%; /* Make it round */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.arrow-button:hover {
+    transform: scale(1.1); /* Slightly enlarge the button */
+}
+
+.arrow-button:focus {
+    outline: none; /* Remove the focus outline */
 }

@@ -5,7 +5,8 @@ export const gameData = {
     satellite: 0,
     research: 0,
     probe: 0,
-    colony: 0
+    colony: 0,
+    research_ore_increase: 0
 };
 
 export const cooldowns = {
@@ -23,11 +24,12 @@ export const intervals = {
 };
 
 export const upgrades = {
-    // Cost, Delay
-    mine: [0, 3],
-    satellite: [30, 2],
-    probe: [500, 20],
-    colony: [5000, 30]
+    // Delay, Ore Cost, Research Cost
+    mine: [3, 0, 0],
+    satellite: [2, 30, 0],
+    probe: [20, 500, 0],
+    colony: [30, 5000, 0],
+    research_ore_increase: [0, 0, 10]
 };
 
 export const ships = {
@@ -35,6 +37,14 @@ export const ships = {
     satellite: [1, 0],
     probe: [10, 0],
     colony: [10, 1]
+}
+
+export let factories = {
+    // Level, Quantity
+    mine: [],
+    satellite: [],
+    probe: [],
+    colony: []
 }
 
 let doNotSave = false;
@@ -47,6 +57,8 @@ export function resetAll() {
 
 export function loadData() {
     // Load data from local storage
+    factories = JSON.parse(localStorage.getItem("factories"));
+
     Object.keys(gameData).forEach(key => {
         gameData[key] = +localStorage.getItem(key);
     });
@@ -55,10 +67,12 @@ export function loadData() {
 function saveData() {
     if (doNotSave) return;
 
+    localStorage.setItem("factories", JSON.stringify(factories));
+
     Object.keys(gameData).forEach(key => {
         localStorage.setItem(key, gameData[key]);
     });
-    localStorage.setItem('last_save', Date.now());
+    localStorage.setItem("last_save", Date.now());
 }
 
 window.onbeforeunload = function() {

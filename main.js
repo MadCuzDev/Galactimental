@@ -1,4 +1,4 @@
-import { gameData, cooldowns, intervals, upgrades, ships, loadData, resetAll } from "./data.js";
+import { gameData, cooldowns, intervals, upgrades, ships, factories, loadData, resetAll } from "./data.js";
 
 const tickInterval = 100;
 let currentTick = 0;
@@ -54,14 +54,46 @@ function changeTab(event, tabName) {
     event.currentTarget.className += " active";
 }
 
+function handleClick() {
+    alert("Arrow button clicked!");
+}
+
 function purchaseUpgrade(upgradeName) {
-    if (cooldowns[upgradeName] === 0 && gameData["ore"] >= upgrades[upgradeName][0]) {
+    if (upgradeName.startsWith("factory") || upgrades[upgradeName][0] === 0 || cooldowns[upgradeName] === 0) {
+        if (upgradeName.startsWith("factory")) {
+            if (gameData["ore"] >= 1000) {
+                gameData["ore"] -= 1000;
+                factories.mine[1] ? factories.mine[1]+=1 : factories.mine[1] = 1;
+                return;
+            } else {
+                return;
+            }
+        } else {
+            if (upgrades[upgradeName][1] > 0) {
+                if (gameData["ore"] >= upgrades[upgradeName][1]) {
+                    gameData["ore"] -= upgrades[upgradeName][1];
+                } else {
+                    return;
+                }
+            }
+        }
+
+        if (upgrades[upgradeName][2] > 0) {
+            const upgradeCost = Math.pow(upgrades[upgradeName][2], gameData[upgradeName]+1);
+            if (gameData["research"] >= upgradeCost) {
+                gameData["research"] -= upgradeCost;
+            } else {
+                return;
+            }
+        }
+
         gameData[upgradeName]++;
-        gameData["ore"] -= upgrades[upgradeName][0];
+        if (upgrades[upgradeName][0] > 0) {
         intervals[upgradeName] = setInterval(function () {
             cooldownInterval(upgradeName)
         }, 1000);
-        cooldowns[upgradeName] = upgrades[upgradeName][1];
+         cooldowns[upgradeName] = upgrades[upgradeName][0];
+         }
         formatButton(upgradeName);
     }
 }
@@ -74,12 +106,20 @@ function launchShip(shipName) {
         setTimeout(function () {
             gameData["research"] += researchCount;
             gameData["land"] += landCount;
-            missionLog.textContent += `${tempCount} ${shipName === "colony" ? "colony ship" : shipName}s returned with ${researchCount} research`;
+            addToMissionLog(`${tempCount} ${shipName === "colony" ? "colony ship" : shipName}s returned with ${researchCount} research`);
             if (landCount > 0) missionLog.textContent += ` and ${landCount} land\r\n`;
             else missionLog.textContent += `\r\n`;
         }, 20000);
         gameData[shipName] = 0;
     }
+}
+
+function cheats(name, value) {
+    gameData[name] = value;
+}
+
+function addToMissionLog(message) {
+    missionLog.textContent = message + `\r\n` + missionLog.textContent;
 }
 
 function formatButton(name) {
@@ -88,14 +128,17 @@ function formatButton(name) {
             document.getElementById("mine-button").textContent = `build mine\r\n1 ore per second\r\nCooldown: ${cooldowns[name]}s`;
             break;
         case "satellite":
-            document.getElementById("satellite-button").textContent = `build satellite - cost: ${upgrades[name][0]} ore\r\ncollects research around planet\r\nCooldown: ${cooldowns[name]}s`;
+            document.getElementById("satellite-button").textContent = `build satellite - cost: ${upgrades[name][1]} ore\r\ncollects research around planet\r\nCooldown: ${cooldowns[name]}s`;
             break;
         case "probe":
-            document.getElementById("probe-button").textContent = `build probe - cost: ${upgrades[name][0]} ore\r\ncollects more research in nearby outer space\r\nCooldown: ${cooldowns[name]}s`;
-            break
+            document.getElementById("probe-button").textContent = `build probe - cost: ${upgrades[name][1]} ore\r\ncollects more research in nearby outer space\r\nCooldown: ${cooldowns[name]}s`;
+            break;
         case "colony":
-            document.getElementById("colony-button").textContent = `build colony ship - cost: ${upgrades[name][0]} ore\r\ncolonizes land and much more research in nearby outer space\r\nCooldown: ${cooldowns[name]}s`;
-            break
+            document.getElementById("colony-button").textContent = `build colony ship - cost: ${upgrades[name][1]} ore\r\ncolonizes land and much more research in nearby outer space\r\nCooldown: ${cooldowns[name]}s`;
+            break;
+        case "research_ore_increase":
+            document.getElementById("research-ore-increase-button").textContent = `doubles ore gain - cost: ${Math.pow(upgrades["research_ore_increase"][2], gameData["research_ore_increase"]+1)} research\r\ncurrent multi: ${Math.pow(2, gameData["research_ore_increase"])}x`;
+            break;
     }
 }
 
@@ -123,7 +166,14 @@ function formatNumber(number, decimal = 2) {
 function calcPerTick() {
     const currentOre = gameData["ore"];
 
-    gameData["ore"] += 0.1 * gameData["mine"];
+    if (typeof factories.mine[1] === "number") {
+        gameData["mine"] += factories.mine[1] * .01;
+    }
+
+    let moneyGain = 0.1 * gameData["mine"];
+    moneyGain *= Math.pow(2, gameData["research_ore_increase"]);
+
+    gameData["ore"] += moneyGain;
 
     currentTick++;
 
@@ -147,6 +197,8 @@ function load() {
     window.purchaseUpgrade = purchaseUpgrade;
     window.launchShip = launchShip;
     window.resetAll = resetAll;
+    window.cheats = cheats;
+    window.handleClick = handleClick;
 
     // Load displays
     statDisplay = document.getElementById("stat-display");
@@ -156,6 +208,9 @@ function load() {
 
     // Offline progress
     calculateOfflineGain();
+
+    // Update Displays
+    formatButton("research_ore_increase");
 }
 
 function calculateOfflineGain() {
