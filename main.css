@@ -139,3 +139,30 @@ hr {
 .arrow-button:focus {
     outline: none; /* Remove the focus outline */
 }
+
+.dialog {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.8);
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+}
+
+.dialog-box {
+    width: 50%;
+    height: 50%;
+    background: #131419;
+    word-wrap: break-word;
+    padding: 20px;
+}
+
+.dialog-box p {
+    white-space: pre-wrap;
+}
+
+.close-button {
+    min-width: 5vw;
+    min-height: 5vh;
+}

@@ -5,6 +5,7 @@
     <link href="main.css" rel="stylesheet" type="text/css">
     <script src="./main.js" type="module"></script>
     <script src="./data.js" type="module"></script>
+    <script src="./messages.js" type="module"></script>
     <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="shortcut icon" href="favicon.ico">
@@ -13,6 +14,13 @@
 </head>
 
 <body>
+<div class="dialog" id="dialog-background">
+    <div class="dialog-box">
+        <p id="dialog-text">test</p>
+        <button class="tab-button close-button" onclick="closeDialog()">Close</button>
+    </div>
+</div>
+
 <div class="side-column">
     <div class="stats">
         <h3>Stats</h3>
@@ -57,33 +65,33 @@
     <!--Factory Tab-->
     <div class="tab tab-style" id="factory">
         <h3>Factory</h3>
+        <div class="container">
+            <button class="arrow-button" id="left-mine-nav-button" onclick="factoryNavigate(this.id)">&leftarrow;</button>
+            <button class="arrow-button" id="right-mine-nav-button" onclick="factoryNavigate(this.id)">&rightarrow;</button>
+        </div>
         <div class="tab-style">
             <p>Mine</p>
-            <button class="shopButton" id="mine-factory-1" onclick="purchaseUpgrade('factory_mine_1')">mine factory<br>cost 1000 ore<br>produces 1 mine per 10 seconds</button>
-            <button class="shopButton" id="mine-factory-2" onclick="purchaseUpgrade('factory_mine_2')">mine factory<br>cost 1000 ore<br>produces 1 mine per 10 seconds</button>
-            <button class="shopButton" id="mine-factory-3" onclick="purchaseUpgrade('factory_mine_3')">mine factory<br>cost 1000 ore<br>produces 1 mine per 10 seconds</button>
-            <div class="container">
-                <button class="arrow-button" onclick="alert('Button clicked!')">&leftarrow;</button>
-                <button class="arrow-button" onclick="alert('Button clicked!')">&rightarrow;</button>
-            </div>
+            <button class="shopButton" id="mine-factory-1-button" onclick="purchaseUpgrade('factory_mine_1')">mine factory<br>cost 1000 ore</button>
+            <button class="shopButton" id="mine-factory-2-button" onclick="purchaseUpgrade('factory_mine_2')">mine factory<br>cost 1000 ore</button>
+            <button class="shopButton" id="mine-factory-3-button" onclick="purchaseUpgrade('factory_mine_3')">mine factory<br>cost 1000 ore</button>
         </div>
         <div class="tab-style">
             <p>Satellite</p>
-            <button class="shopButton" id="satellite-factory-1" onclick="purchaseUpgrade('factory_satellite_1')">satellite factory<br>cost 1000 ore<br>produces 1 mine per 10 seconds</button>
-            <button class="shopButton" id="satellite-factory-2" onclick="purchaseUpgrade('factory_satellite_2')">satellite factory<br>cost 1000 ore<br>produces 1 mine per 10 seconds</button>
-            <button class="shopButton" id="satellite-factory-3" onclick="purchaseUpgrade('factory_satellite_3')">satellite factory<br>cost 1000 ore<br>produces 1 mine per 10 seconds</button>
+            <button class="shopButton" id="satellite-factory-1-button" onclick="purchaseUpgrade('factory_satellite_1')">satellite factory<br>cost 1000 ore</button>
+            <button class="shopButton" id="satellite-factory-2-button" onclick="purchaseUpgrade('factory_satellite_2')">satellite factory<br>cost 1000 ore</button>
+            <button class="shopButton" id="satellite-factory-3-button" onclick="purchaseUpgrade('factory_satellite_3')">satellite factory<br>cost 1000 ore</button>
         </div>
         <div class="tab-style">
             <p>Probe</p>
-            <button class="shopButton" id="mine-probe-1" onclick="purchaseUpgrade('factory_probe_1')">probe factory<br>cost 1000 ore<br>produces 1 mine per 10 seconds</button>
-            <button class="shopButton" id="mine-probe-2" onclick="purchaseUpgrade('factory_probe_2')">probe factory<br>cost 1000 ore<br>produces 1 mine per 10 seconds</button>
-            <button class="shopButton" id="mine-probe-3" onclick="purchaseUpgrade('factory_probe_3')">probe factory<br>cost 1000 ore<br>produces 1 mine per 10 seconds</button>
+            <button class="shopButton" id="probe-factory-1-button" onclick="purchaseUpgrade('factory_probe_1')">probe factory<br>cost 1000 ore</button>
+            <button class="shopButton" id="probe-factory-2-button" onclick="purchaseUpgrade('factory_probe_2')">probe factory<br>cost 1000 ore</button>
+            <button class="shopButton" id="probe-factory-3-button" onclick="purchaseUpgrade('factory_probe_3')">probe factory<br>cost 1000 ore</button>
         </div>
         <div class="tab-style">
             <p>Colony</p>
-            <button class="shopButton" id="colony-factory-1" onclick="purchaseUpgrade('factory_colony_1')">colony factory<br>cost 1000 ore<br>produces 1 mine per 10 seconds</button>
-            <button class="shopButton" id="colony-factory-2" onclick="purchaseUpgrade('factory_colony_2')">colony factory<br>cost 1000 ore<br>produces 1 mine per 10 seconds</button>
-            <button class="shopButton" id="colony-factory-3" onclick="purchaseUpgrade('factory_colony_3')">colony factory<br>cost 1000 ore<br>produces 1 mine per 10 seconds</button>
+            <button class="shopButton" id="colony-factory-1-button" onclick="purchaseUpgrade('factory_colony_1')">colony factory<br>cost 1000 ore</button>
+            <button class="shopButton" id="colony-factory-2-button" onclick="purchaseUpgrade('factory_colony_2')">colony factory<br>cost 1000 ore</button>
+            <button class="shopButton" id="colony-factory-3-button" onclick="purchaseUpgrade('factory_colony_3')">colony factory<br>cost 1000 ore</button>
         </div>
     </div>
 
@@ -95,7 +103,7 @@
     </div>
     <p>Conquest Progress</p>
     <div class="progress-bar">
-        <span id="conquest-display-text">test</span>
+        <span id="conquest-display-text">Loading...</span>
         <progress id="conquest-display" value="0" max="100">placeholder</progress>
     </div>
 </div>

@@ -1,3 +1,5 @@
+import {messages, messageStatus} from "./messages.js";
+
 export const gameData = {
     ore: 0,
     mine: 0,
@@ -41,10 +43,10 @@ export const ships = {
 
 export let factories = {
     // Level, Quantity
-    mine: [],
-    satellite: [],
-    probe: [],
-    colony: []
+    mine: [1, 0],
+    satellite: [1, 0],
+    probe: [1, 0],
+    colony: [1, 0]
 }
 
 let doNotSave = false;
@@ -57,10 +59,16 @@ export function resetAll() {
 
 export function loadData() {
     // Load data from local storage
-    factories = JSON.parse(localStorage.getItem("factories"));
+    if (localStorage.getItem("factories") !== null) {
+        factories = JSON.parse(localStorage.getItem("factories"));
+    }
 
     Object.keys(gameData).forEach(key => {
         gameData[key] = +localStorage.getItem(key);
+    });
+
+    Object.keys(messageStatus).forEach(key => {
+        messageStatus[key] = +localStorage.getItem(key);
     });
 }
 
@@ -72,6 +80,11 @@ function saveData() {
     Object.keys(gameData).forEach(key => {
         localStorage.setItem(key, gameData[key]);
     });
+
+    Object.keys(messageStatus).forEach(key => {
+        localStorage.setItem(key, messageStatus[key]);
+    });
+
     localStorage.setItem("last_save", Date.now());
 }
 
