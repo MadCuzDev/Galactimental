@@ -25,13 +25,13 @@ function update() {
     statDisplayText += `${formatNumber(gameData.research)} Research`;
     statDisplay.textContent = statDisplayText;
 
-    let conquestProgress = gameData.land / 1000;
+    let conquestProgress = gameData.land / 10000000;
     conquestDisplay.value = conquestProgress;
     conquestDisplayText.textContent = `${Math.min(conquestProgress, 100)}%`;
 
-    story();
-
     formatFactoryButtons();
+
+    story();
 
     requestAnimationFrame(update);
 }
@@ -57,7 +57,12 @@ function story() {
         messageStatus.start = true;
     }
 
-    if (!messageStatus.mid && conquestDisplay.value >= 10) {
+    if (!messageStatus.early && conquestDisplay.value >= 0.00001) {
+        openDialog(messages.early);
+        messageStatus.early = true;
+    }
+
+    if (!messageStatus.mid && conquestDisplay.value >= 0.1) {
         openDialog(messages.mid);
         messageStatus.mid = true;
     }
@@ -70,7 +75,6 @@ function story() {
 
 function factoryNavigate(id) {
     const idSplit = id.split("-");
-    console.log("factory nav " + idSplit[0]);
     if (idSplit[0] === "right") {
         factoryDisplayNumber++;
     } else {
@@ -82,27 +86,19 @@ function factoryNavigate(id) {
 
 function formatFactoryButtons() {
     for (let i = 1; i < 4; i++) {
-        document.getElementById("mine-factory-"+i.toString()+"-button").textContent = `mine factory ${factoryDisplayNumber+(i-2)}\r\n
-    costs ${formatNumber(100*Math.pow(10,factoryDisplayNumber+(i-2)))}\r\n
-    You own ${factories && factories.mine && typeof factories.mine[factoryDisplayNumber+(i-2)] === "number" ? formatNumber(factories.mine[factoryDisplayNumber+(i-2)]) : 0}`;
+        document.getElementById("mine-factory-"+i.toString()+"-button").textContent = `mine factory ${factoryDisplayNumber+(i-2)}\r\ncosts ${formatNumber(upgrades.factory_mine[1]*Math.pow(10,factoryDisplayNumber+(i-2)))}\r\nYou own ${factories && factories.mine && typeof factories.mine[factoryDisplayNumber+(i-2)] === "number" ? formatNumber(factories.mine[factoryDisplayNumber+(i-2)]) : 0}`;
     }
 
     for (let i = 1; i < 4; i++) {
-        document.getElementById("satellite-factory-"+i.toString()+"-button").textContent = `satellite factory ${factoryDisplayNumber+(i-2)}\r\n
-    costs ${formatNumber(100*Math.pow(10,factoryDisplayNumber+(i-2)))}\r\n
-    You own ${factories && factories.mine && typeof factories.satellite[factoryDisplayNumber+(i-2)] === "number" ? formatNumber(factories.satellite[factoryDisplayNumber+(i-2)]) : 0}`;
+        document.getElementById("satellite-factory-"+i.toString()+"-button").textContent = `satellite factory ${factoryDisplayNumber+(i-2)}\r\ncosts ${formatNumber(upgrades.factory_satellite[1]*Math.pow(10,factoryDisplayNumber+(i-2)))}\r\nYou own ${factories && factories.mine && typeof factories.satellite[factoryDisplayNumber+(i-2)] === "number" ? formatNumber(factories.satellite[factoryDisplayNumber+(i-2)]) : 0}`;
     }
 
     for (let i = 1; i < 4; i++) {
-        document.getElementById("probe-factory-"+i.toString()+"-button").textContent = `probe factory ${factoryDisplayNumber+(i-2)}\r\n
-    costs ${formatNumber(100*Math.pow(10,factoryDisplayNumber+(i-2)))}\r\n
-    You own ${factories && factories.mine && typeof factories.probe[factoryDisplayNumber+(i-2)] === "number" ? formatNumber(factories.probe[factoryDisplayNumber+(i-2)]) : 0}`;
+        document.getElementById("probe-factory-"+i.toString()+"-button").textContent = `probe factory ${factoryDisplayNumber+(i-2)}\r\ncosts ${formatNumber(upgrades.factory_probe[1]*Math.pow(10,factoryDisplayNumber+(i-2)))}\r\nYou own ${factories && factories.mine && typeof factories.probe[factoryDisplayNumber+(i-2)] === "number" ? formatNumber(factories.probe[factoryDisplayNumber+(i-2)]) : 0}`;
     }
 
     for (let i = 1; i < 4; i++) {
-        document.getElementById("colony-factory-"+i.toString()+"-button").textContent = `colony factory ${factoryDisplayNumber+(i-2)}\r\n
-    costs ${formatNumber(100*Math.pow(10,factoryDisplayNumber+(i-2)))}\r\n
-    You own ${factories && factories.mine && typeof factories.colony[factoryDisplayNumber+(i-2)] === "number" ? formatNumber(factories.colony[factoryDisplayNumber+(i-2)]) : 0}`;
+        document.getElementById("colony-factory-"+i.toString()+"-button").textContent = `colony factory ${factoryDisplayNumber+(i-2)}\r\ncosts ${formatNumber(upgrades.factory_colony[1]*Math.pow(10,factoryDisplayNumber+(i-2)))}\r\nYou own ${factories && factories.mine && typeof factories.colony[factoryDisplayNumber+(i-2)] === "number" ? formatNumber(factories.colony[factoryDisplayNumber+(i-2)]) : 0}`;
     }
 }
 
@@ -111,11 +107,11 @@ function purchaseUpgrade(upgradeName) {
         if (upgradeName.startsWith("factory")) {
             const split = upgradeName.split("_");
             const factoryNumber = Number.parseInt(split[2]) + (factoryDisplayNumber-2);
-            const cost = 100*Math.pow(10,factoryNumber);
+            const cost = upgrades[split[0]+"_"+split[1]][1] * Math.pow(10,factoryNumber);
 
             if (gameData.ore >= cost) {
                 gameData.ore -= cost;
-                factories && factories[split[1]] && typeof factories[split[1]][factoryNumber] === "number" ? factories[split[1]][factoryNumber] +=1 : factories[split[1]][factoryNumber] = 1;
+                factories && factories[split[1]] && typeof factories[split[1]][factoryNumber] === "number" ? factories[split[1]][factoryNumber]++ : factories[split[1]][factoryNumber] = 1;
                 return;
             } else {
                 return;
@@ -154,7 +150,8 @@ function launchShip(shipName) {
     if (gameData[shipName] > 0) {
         const tempCount = gameData[shipName];
         const researchCount = gameData[shipName] * ships[shipName][0];
-        const landCount = gameData[shipName] * ships[shipName][1];
+        const landCount = gameData[shipName] * ships[shipName][1] * Math.pow(2, gameData["research_land_increase"]);
+        addToMissionLog(`Launched ${tempCount.toFixed()} ${shipName === "colony" ? "colony ship" : shipName}s`);
         setTimeout(function () {
             gameData.research += researchCount;
             gameData.land += landCount;
@@ -195,10 +192,13 @@ function formatButton(name) {
             document.getElementById("probe-button").textContent = `build probe - cost: ${upgrades[name][1]} ore\r\ncollects more research in nearby outer space\r\nCooldown: ${cooldowns[name]}s`;
             break;
         case "colony":
-            document.getElementById("colony-button").textContent = `build colony ship - cost: ${upgrades[name][1]} ore\r\ncolonizes land and much more research in nearby outer space\r\nCooldown: ${cooldowns[name]}s`;
+            document.getElementById("colony-button").textContent = `build colony ship - cost: ${upgrades[name][1]} ore\r\nclaims land and lots of research in outer space\r\nCooldown: ${cooldowns[name]}s`;
             break;
         case "research_ore_increase":
-            document.getElementById("research-ore-increase-button").textContent = `doubles ore gain - cost: ${Math.pow(upgrades["research_ore_increase"][2], gameData["research_ore_increase"]+1)} research\r\ncurrent multi: ${Math.pow(2, gameData["research_ore_increase"])}x`;
+            document.getElementById("research-ore-increase-button").textContent = `doubles ore gain - cost: ${formatNumber(Math.pow(upgrades["research_ore_increase"][2], gameData["research_ore_increase"]+1))} research\r\ncurrent multi: ${formatNumber(Math.pow(2, gameData["research_ore_increase"]))}x`;
+            break;
+        case "research_land_increase":
+            document.getElementById("research-land-increase-button").textContent = `doubles land gain - cost: ${formatNumber(Math.pow(upgrades["research_land_increase"][2], gameData["research_land_increase"]+1))} research\r\ncurrent multi: ${formatNumber(Math.pow(2, gameData["research_land_increase"]))}x`;
             break;
     }
 }
@@ -217,10 +217,14 @@ function backgroundLoop() {
 }
 
 function formatNumber(number) {
-    if (number.toFixed().length > 9) {
-        return number.toExponential(1);
+    if (typeof number === "number") {
+        if (number.toFixed().length > 9) {
+            return number.toExponential(1);
+        } else {
+            return new Intl.NumberFormat().format(number.toFixed(0));
+        }
     } else {
-        return new Intl.NumberFormat().format(number.toFixed(0));
+        return number;
     }
 }
 
@@ -228,21 +232,13 @@ function calcPerTick() {
     const currentOre = gameData.ore;
 
     for (let i = 2; i < 101; i++) {
-    Object.keys(factories).forEach((element) => {
-            if (typeof factories[element][i] === "number") {
-                factories[element][i-1] += factories[element][i] * .01;
-            }
+        Object.keys(factories).forEach((key) => {
+            factories && factories[key] && typeof factories[key][i] === "number" ? factories[key][i - 1] += factories[key][i] * .02 : factories[key][i] = 0;
         });
     }
 
-    //if (factories && factories.mine && factories.mine[1] !== null) {
-    //    gameData['ore'] += factories.mine[1] * .01;
-    //}
-
-    Object.keys(factories).forEach((element) => {
-        if (typeof factories[element][1] === "number") {
-            gameData[element] += factories[element][1] * .01;
-        }
+    Object.keys(factories).forEach((key) => {
+        factories && factories[key] && typeof factories[key][1] === "number" ? gameData[key] += factories[key][1] * .02 : gameData[key]+=0;
     });
 
     let moneyGain = 0.1 * gameData.mine;
@@ -276,6 +272,7 @@ function load() {
     window.resetAll = resetAll;
     window.factoryNavigate = factoryNavigate;
     window.closeDialog = closeDialog;
+    window.gameData = gameData;
 
     window.cheats = cheats;
 
@@ -290,6 +287,7 @@ function load() {
 
     // Update Displays
     formatButton("research_ore_increase");
+    formatButton("research_land_increase");
 }
 
 function calculateOfflineGain() {

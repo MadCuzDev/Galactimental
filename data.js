@@ -1,4 +1,4 @@
-import {messages, messageStatus} from "./messages.js";
+import {messageStatus} from "./messages.js";
 
 export const gameData = {
     ore: 0,
@@ -8,7 +8,8 @@ export const gameData = {
     research: 0,
     probe: 0,
     colony: 0,
-    research_ore_increase: 0
+    research_ore_increase: 0,
+    research_land_increase: 0
 };
 
 export const cooldowns = {
@@ -29,9 +30,14 @@ export const upgrades = {
     // Delay, Ore Cost, Research Cost
     mine: [3, 0, 0],
     satellite: [2, 30, 0],
-    probe: [20, 500, 0],
-    colony: [30, 5000, 0],
-    research_ore_increase: [0, 0, 10]
+    probe: [20, 250, 0],
+    colony: [30, 2000, 0],
+    research_ore_increase: [0, 0, 10],
+    research_land_increase: [0, 0, 100],
+    factory_mine: [0, 100, 0],
+    factory_satellite: [0, 300, 0],
+    factory_probe: [0, 2500, 0],
+    factory_colony: [0, 20000, 0]
 };
 
 export const ships = {
@@ -68,7 +74,7 @@ export function loadData() {
     });
 
     Object.keys(messageStatus).forEach(key => {
-        messageStatus[key] = +localStorage.getItem(key);
+        messageStatus[key] = localStorage.getItem(key);
     });
 }
 

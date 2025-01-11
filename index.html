@@ -34,6 +34,7 @@
     <div class="tabs">
         <button class="tab-button" id="defaultTab" onclick="changeTab(event, 'main')">Main</button>
         <button class="tab-button" onclick="changeTab(event, 'factory')">Factory</button>
+        <button class="tab-button" onclick="changeTab(event, 'info')">Info</button>
         <button class="tab-button" onclick="changeTab(event, 'settings')">Settings</button>
     </div>
     <br>
@@ -47,17 +48,18 @@
         <div class="tab-style">
             <p>Space</p>
             <button class="shopButton" id="satellite-button" onclick="purchaseUpgrade('satellite')">build satellite - cost: 30 ore<br>collects research around planet<br>Cooldown: 0s</button>
-            <button class="shopButton" id="probe-button" onclick="purchaseUpgrade('probe')">build probe - cost: 500 ore<br>collects more research in nearby outer space<br>Cooldown: 0s</button>
-            <button class="shopButton" id="colony-button" onclick="purchaseUpgrade('colony')">build colony ship - cost: 5000 ore<br>colonizes land and much more research in nearby outer space<br>Cooldown: 0s</button>
+            <button class="shopButton" id="probe-button" onclick="purchaseUpgrade('probe')">build probe - cost: 250 ore<br>collects more research in nearby outer space<br>Cooldown: 0s</button>
+            <button class="shopButton" id="colony-button" onclick="purchaseUpgrade('colony')">build colony ship - cost: 2000 ore<br>claims land and lots of research in outer space<br>Cooldown: 0s</button>
             <br><br>
             <button class="shopButton" id="launch-satellite-button" onclick="launchShip('satellite')">launch satellites<br>collects research around planet</button>
             <button class="shopButton" id="launch-probe-button" onclick="launchShip('probe')">launch probes<br>collects more research in nearby outer space</button>
-            <button class="shopButton" id="launch-colony-button" onclick="launchShip('colony')">launch colony ships<br>colonizes land and much more research in nearby outer space</button>
+            <button class="shopButton" id="launch-colony-button" onclick="launchShip('colony')">launch colony ships<br>claims land and lots of research in outer space</button>
             <br><br>
         </div>
         <div class="tab-style">
             <p>Research</p>
             <button class="shopButton" id="research-ore-increase-button" onclick="purchaseUpgrade('research_ore_increase')">doubles ore gain<br>costs x research</button>
+            <button class="shopButton" id="research-land-increase-button" onclick="purchaseUpgrade('research_land_increase')">doubles land gain<br>costs x research</button>
             <br><br>
         </div>
     </div>
@@ -69,30 +71,42 @@
             <button class="arrow-button" id="left-mine-nav-button" onclick="factoryNavigate(this.id)">&leftarrow;</button>
             <button class="arrow-button" id="right-mine-nav-button" onclick="factoryNavigate(this.id)">&rightarrow;</button>
         </div>
-        <div class="tab-style">
+        <br>
+        <div class="tab-style factory-style">
             <p>Mine</p>
             <button class="shopButton" id="mine-factory-1-button" onclick="purchaseUpgrade('factory_mine_1')">mine factory<br>cost 1000 ore</button>
             <button class="shopButton" id="mine-factory-2-button" onclick="purchaseUpgrade('factory_mine_2')">mine factory<br>cost 1000 ore</button>
             <button class="shopButton" id="mine-factory-3-button" onclick="purchaseUpgrade('factory_mine_3')">mine factory<br>cost 1000 ore</button>
         </div>
-        <div class="tab-style">
+        <div class="tab-style factory-style">
             <p>Satellite</p>
             <button class="shopButton" id="satellite-factory-1-button" onclick="purchaseUpgrade('factory_satellite_1')">satellite factory<br>cost 1000 ore</button>
             <button class="shopButton" id="satellite-factory-2-button" onclick="purchaseUpgrade('factory_satellite_2')">satellite factory<br>cost 1000 ore</button>
             <button class="shopButton" id="satellite-factory-3-button" onclick="purchaseUpgrade('factory_satellite_3')">satellite factory<br>cost 1000 ore</button>
         </div>
-        <div class="tab-style">
+        <div class="tab-style factory-style">
             <p>Probe</p>
             <button class="shopButton" id="probe-factory-1-button" onclick="purchaseUpgrade('factory_probe_1')">probe factory<br>cost 1000 ore</button>
             <button class="shopButton" id="probe-factory-2-button" onclick="purchaseUpgrade('factory_probe_2')">probe factory<br>cost 1000 ore</button>
             <button class="shopButton" id="probe-factory-3-button" onclick="purchaseUpgrade('factory_probe_3')">probe factory<br>cost 1000 ore</button>
         </div>
-        <div class="tab-style">
+        <div class="tab-style factory-style">
             <p>Colony</p>
             <button class="shopButton" id="colony-factory-1-button" onclick="purchaseUpgrade('factory_colony_1')">colony factory<br>cost 1000 ore</button>
             <button class="shopButton" id="colony-factory-2-button" onclick="purchaseUpgrade('factory_colony_2')">colony factory<br>cost 1000 ore</button>
             <button class="shopButton" id="colony-factory-3-button" onclick="purchaseUpgrade('factory_colony_3')">colony factory<br>cost 1000 ore</button>
         </div>
+    </div>
+
+    <!--Info Tab-->
+    <div class="tab tab-style" id="info">
+        <h3>Info</h3>
+        <hr>
+        <p>Contact MadCuzDev on Discord or anywhere I have an account for questions/feedback</p>
+        <hr>
+        <p>Factory one produces base product. Factory two and above produce the factory below them</p>
+        <hr>
+        <p>The current end is when land / 10000000 = 100</p>
     </div>
 
     <!--Settings Tab-->
